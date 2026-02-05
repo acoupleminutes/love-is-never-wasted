@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>love's never wasted when it's shared</title>
+  <style>
+    @font-face {
+      font-family: 'TheSignature';
+      src: url('thesignature.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Chicago';
+      src: url('chicago.ttf') format('truetype');
+    }
+    body {
+      background: url('linedpaper.jpg');
+      font-family: 'TheSignature', cursive;
+      color: rgb(29, 6, 6);
+      font-size: 40px;
+      margin: 0;
+      text-align: center;
+    }
+    p { margin-bottom: 15px; }
+
+    .mac-window {
+      border: 3px solid black;
+      width: 400px;
+      margin: 40px auto;
+      background-color: #e0e0e0;
+      box-shadow: 5px 5px #888888;
+    }
+    .mac-titlebar {
+      background-color: #c0c0c0;
+      padding: 5px;
+      border-bottom: 2px solid black;
+      text-align: left;
+      font-family: 'Chicago', monospace;
+      font-size: 14px;
+    }
+    .mac-content {
+      padding: 20px;
+      text-align: center;
+      font-family: 'Chicago', monospace;
+    }
+
+    form {
+      text-align: left;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 6px;
+      border: 2px solid black;
+      background: #fff;
+      font-family: 'Chicago', monospace;
+      font-size: 14px;
+    }
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+    button {
+      padding: 8px 16px;
+      border: 3px solid black;
+      background: #d0d0d0;
+      box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
+      cursor: pointer;
+      font-family: 'Chicago', monospace;
+      font-size: 14px;
+    }
+    button:active {
+      box-shadow: inset 3px 3px #808080, inset -3px -3px #ffffff;
+    }
+
+    .status {
+      border: 3px solid black;
+      background: #d0d0d0;
+      box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    .pixel-button {
+      display: inline-block;
+      width: 60px;
+      height: 60px;
+      background: #d0d0d0;
+      border: 3px solid #000;
+      box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+    .pixel-button:active {
+      box-shadow: inset 3px 3px #808080, inset -3px -3px #ffffff;
+    }
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-left: 25px solid black;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      margin: 15px auto;
+    }
+    .pause-icon {
+      display: flex;
+      justify-content: space-around;
+      margin: 15px auto;
+      width: 30px;
+    }
+    .pause-icon div {
+      width: 10px;
+      height: 30px;
+      background: black;
+    }
+
+    /* Custom file button styling */
+    #chooseFileButton {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: 3px solid black;
+      background: #d0d0d0;
+      box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
+      cursor: pointer;
+      font-family: 'Chicago', monospace;
+      font-size: 14px;
+    }
+    #chooseFileButton:active {
+      box-shadow: inset 3px 3px #808080, inset -3px -3px #ffffff;
+    }
+    #fileName {
+      font-size: 14px;
+      font-family: 'Chicago', monospace;
+      margin-left: 10px;
+    }
+
+    /* Align send button to the right */
+    .send-button-container {
+      text-align: right;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <p>LOVE IS NEVER WASTED WHEN IT IS SHARED</p>
+
+  <!-- Notes app window -->
+  <div class="mac-window">
+    <div class="mac-titlebar">Notes</div>
+    <div class="mac-content">
+      <form id="notesForm" action="sendmail.php" method="POST" enctype="multipart/form-data">
+        <label for="to">To:</label>
+        <input type="email" id="to" name="to" placeholder="recipient@example.com" required>
+
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" placeholder="Your subject" required>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" placeholder="Write your letter here..." required></textarea>
+
+        <label for="send_time">Send At (optional):</label>
+        <input type="datetime-local" id="send_time" name="send_time">
+
+        <!-- ✅ Custom file attachment UI -->
+        <label>Attach a file (optional):</label>
+        <input type="file" id="attachment" name="attachment" style="display:none;">
+        <button type="button" id="chooseFileButton">Choose File</button>
+        <span id="fileName"></span>
+
+        <!-- Hidden timezone field -->
+        <input type="hidden" id="timezone" name="timezone">
+
+        <!-- ✅ Send button moved below, aligned right -->
+        <div class="send-button-container">
+          <button type="submit">Send</button>
+        </div>
+      </form>
+      <div id="statusBox" class="status"></div>
+      <button id="backButton" style="display:none;">Back to Notes</button>
+    </div>
+  </div>
+
+  <!-- Music player window -->
+  <div class="mac-window">
+    <div class="mac-titlebar">a couple minutes...</div>
+    <div class="mac-content">
+      <div id="toggleButton" class="pixel-button">
+        <div class="play-icon"></div>
+      </div>
+      <audio id="player">
+        <source src="acoupleminutes.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  </div>
+
+  <script>
+    // Capture user's timezone automatically
+    document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const form = document.getElementById('notesForm');
+    const statusBox = document.getElementById('statusBox');
+    const backButton = document.getElementById('backButton');
+
+    // Custom file button logic
+    const chooseFileButton = document.getElementById('chooseFileButton');
+    const attachmentInput = document.getElementById('attachment');
+    const fileNameSpan = document.getElementById('fileName');
+
+    chooseFileButton.addEventListener('click', () => {
+      attachmentInput.click();
+    });
+
+    attachmentInput.addEventListener('change', () => {
+      if (attachmentInput.files.length > 0) {
+        fileNameSpan.textContent = attachmentInput.files[0].name;
+      } else {
+        fileNameSpan.textContent = '';
+      }
+    });
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = new FormData(form);
+      try {
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: data
+        });
+        const result = await response.text();
+
+        statusBox.style.display = 'block';
+        if (form.send_time.value) {
+          const tzValue = document.getElementById('timezone').value;
+          statusBox.textContent = `Your letter has been scheduled for ${form.send_time.value} (${tzValue})`;
+        } else {
+          statusBox.textContent = result;
+        }
+
+        form.style.display = 'none';
+        backButton.style.display = 'inline-block';
+      } catch (error) {
+        statusBox.style.display = 'block';
+        statusBox.textContent = "Network error. Please try again.";
+        form.style.display = 'none';
+        backButton.style.display = 'inline-block';
+      }
+    });
+
+        backButton.addEventListener('click', () => {
+      statusBox.style.display = 'none';
+      backButton.style.display = 'none';
+      form.style.display = 'block';
+    });
+
+    // Music toggle logic
+    const player = document.getElementById('player');
+    const toggleButton = document.getElementById('toggleButton');
+
+    toggleButton.addEventListener('click', () => {
+      if (player.paused) {
+        player.play();
+        toggleButton.innerHTML = '<div class="pause-icon"><div></div><div></div></div>';
+      } else {
+        player.pause();
+        toggleButton.innerHTML = '<div class="play-icon"></div>';
+      }
+    });
+  </script>
+
+</body>
+</html>
