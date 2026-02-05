@@ -156,7 +156,7 @@
   <div class="mac-window">
     <div class="mac-titlebar">Notes</div>
     <div class="mac-content">
-      <form id="notesForm" action="sendmail.php" method="POST" enctype="multipart/form-data">
+      <form id="notesForm" action="https://loveisneverwasted.ct.ws/sendmail.php" method="POST" enctype="multipart/form-data">
         <label for="to">To:</label>
         <input type="email" id="to" name="to" placeholder="recipient@example.com" required>
 
@@ -169,7 +169,7 @@
         <label for="send_time">Send At (optional):</label>
         <input type="datetime-local" id="send_time" name="send_time">
 
-        <!-- ✅ Custom file attachment UI -->
+        <!-- Custom file attachment UI -->
         <label>Attach a file (optional):</label>
         <input type="file" id="attachment" name="attachment" style="display:none;">
         <button type="button" id="chooseFileButton">Choose File</button>
@@ -178,7 +178,7 @@
         <!-- Hidden timezone field -->
         <input type="hidden" id="timezone" name="timezone">
 
-        <!-- ✅ Send button moved below, aligned right -->
+        <!-- Send button aligned right -->
         <div class="send-button-container">
           <button type="submit">Send</button>
         </div>
