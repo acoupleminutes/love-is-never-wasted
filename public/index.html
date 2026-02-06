@@ -146,6 +146,19 @@
       text-align: right;
       margin-top: 15px;
     }
+
+    /* Full message modal */
+    #messageModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      max-height: 80%;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -185,6 +198,18 @@
       </form>
       <div id="statusBox" class="status"></div>
       <button id="backButton" style="display:none;">Back to Notes</button>
+      <button id="viewMessageButton" style="display:none;">View Full Message</button>
+    </div>
+  </div>
+
+  <!-- Full message modal -->
+  <div id="messageModal" class="mac-window">
+    <div class="mac-titlebar">Full Message</div>
+    <div class="mac-content">
+      <div id="fullMessageText"></div>
+      <div style="text-align:right; margin-top:10px;">
+        <button id="closeModalButton">Close</button>
+      </div>
     </div>
   </div>
 
@@ -209,6 +234,10 @@
     const form = document.getElementById('notesForm');
     const statusBox = document.getElementById('statusBox');
     const backButton = document.getElementById('backButton');
+    const viewMessageButton = document.getElementById('viewMessageButton');
+    const messageModal = document.getElementById('messageModal');
+    const fullMessageText = document.getElementById('fullMessageText');
+    const closeModalButton = document.getElementById('closeModalButton');
 
     // Custom file button logic
     const chooseFileButton = document.getElementById('chooseFileButton');
@@ -223,57 +252,71 @@
       if (attachmentInput.files.length > 0) {
         fileNameSpan.textContent = attachmentInput.files[0].name;
       } else {
-        fileNameSpan.textContent = '';
-      }
-    });
+              fileNameSpan.textContent = '';
+    }
+  });
 
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const data = new FormData(form);
-      try {
-        const response = await fetch(form.action, {
-          method: form.method,
-          body: data
-        });
-        const result = await response.text();
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const data = new FormData(form);
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: data
+      });
+      const result = await response.text();
 
-        statusBox.style.display = 'block';
-        if (form.send_time.value) {
-          const tzValue = document.getElementById('timezone').value;
-          statusBox.textContent = `Your letter has been scheduled for ${form.send_time.value} (${tzValue})`;
-        } else {
-          statusBox.textContent = result;
-        }
-
-        form.style.display = 'none';
-        backButton.style.display = 'inline-block';
-      } catch (error) {
-        statusBox.style.display = 'block';
-        statusBox.textContent = "Network error. Please try again.";
-        form.style.display = 'none';
-        backButton.style.display = 'inline-block';
-      }
-    });
-
-        backButton.addEventListener('click', () => {
-      statusBox.style.display = 'none';
-      backButton.style.display = 'none';
-      form.style.display = 'block';
-    });
-
-    // Music toggle logic
-    const player = document.getElementById('player');
-    const toggleButton = document.getElementById('toggleButton');
-
-    toggleButton.addEventListener('click', () => {
-      if (player.paused) {
-        player.play();
-        toggleButton.innerHTML = '<div class="pause-icon"><div></div><div></div></div>';
+      statusBox.style.display = 'block';
+      if (form.send_time.value) {
+        const tzValue = document.getElementById('timezone').value;
+        statusBox.textContent = `Your letter has been scheduled for ${form.send_time.value} (${tzValue})`;
       } else {
-        player.pause();
-        toggleButton.innerHTML = '<div class="play-icon"></div>';
+        statusBox.textContent = result;
       }
-    });
+
+      // Show "View Full Message" button
+      viewMessageButton.style.display = 'inline-block';
+
+      form.style.display = 'none';
+      backButton.style.display = 'inline-block';
+    } catch (error) {
+      statusBox.style.display = 'block';
+      statusBox.textContent = "Network error. Please try again.";
+      form.style.display = 'none';
+      backButton.style.display = 'inline-block';
+    }
+  });
+
+  backButton.addEventListener('click', () => {
+    statusBox.style.display = 'none';
+    backButton.style.display = 'none';
+    viewMessageButton.style.display = 'none';
+    form.style.display = 'block';
+  });
+
+  // Zoom modal logic
+  viewMessageButton.addEventListener('click', () => {
+    fullMessageText.textContent = document.getElementById('message').value;
+    messageModal.style.display = 'block';
+  });
+
+  closeModalButton.addEventListener('click', () => {
+    messageModal.style.display = 'none';
+  });
+
+  // Music toggle logic
+  const player = document.getElementById('player');
+  const toggleButton = document.getElementById('toggleButton');
+
+  toggleButton.addEventListener('click', () => {
+    if (player.paused) {
+      player.play();
+      toggleButton.innerHTML = '<div class="pause-icon"><div></div><div></div></div>';
+    } else {
+      player.pause();
+      toggleButton.innerHTML = '<div class="play-icon"></div>';
+    }
+  });
   </script>
 
 </body>
