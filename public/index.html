@@ -88,76 +88,23 @@
       display: none;
     }
 
-    .pixel-button {
-      display: inline-block;
-      width: 60px;
-      height: 60px;
-      background: #d0d0d0;
-      border: 3px solid #000;
-      box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
-      cursor: pointer;
-      margin: 0 auto;
-    }
-    .pixel-button:active {
-      box-shadow: inset 3px 3px #808080, inset -3px -3px #ffffff;
-    }
-    .play-icon {
-      width: 0;
-      height: 0;
-      border-left: 25px solid black;
-      border-top: 15px solid transparent;
-      border-bottom: 15px solid transparent;
-      margin: 15px auto;
-    }
-    .pause-icon {
-      display: flex;
-      justify-content: space-around;
-      margin: 15px auto;
-      width: 30px;
-    }
-    .pause-icon div {
-      width: 10px;
-      height: 30px;
-      background: black;
-    }
-
-    /* Custom file button styling */
-    #chooseFileButton {
-      margin-top: 10px;
-      padding: 8px 16px;
-      border: 3px solid black;
-      background: #d0d0d0;
-      box-shadow: inset -3px -3px #808080, inset 3px 3px #ffffff;
-      cursor: pointer;
-      font-family: 'Chicago', monospace;
-      font-size: 14px;
-    }
-    #chooseFileButton:active {
-      box-shadow: inset 3px 3px #808080, inset -3px -3px #ffffff;
-    }
-    #fileName {
-      font-size: 14px;
-      font-family: 'Chicago', monospace;
-      margin-left: 10px;
-    }
-
-    /* Align send button to the right */
-    .send-button-container {
-      text-align: right;
-      margin-top: 15px;
-    }
-
     /* Full message modal */
     #messageModal {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 600px;
+      width: 80%;
       max-height: 80%;
       overflow-y: auto;
       z-index: 1000;
       display: none;
+    }
+    #fullMessageText {
+      font-family: 'TheSignature', cursive;
+      font-size: 20px;
+      text-align: left;
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -212,7 +159,6 @@
       </div>
     </div>
   </div>
-
   <!-- Music player window -->
   <div class="mac-window">
     <div class="mac-titlebar">a couple minutes...</div>
@@ -252,71 +198,71 @@
       if (attachmentInput.files.length > 0) {
         fileNameSpan.textContent = attachmentInput.files[0].name;
       } else {
-              fileNameSpan.textContent = '';
-    }
-  });
-
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const data = new FormData(form);
-    try {
-      const response = await fetch(form.action, {
-        method: form.method,
-        body: data
-      });
-      const result = await response.text();
-
-      statusBox.style.display = 'block';
-      if (form.send_time.value) {
-        const tzValue = document.getElementById('timezone').value;
-        statusBox.textContent = `Your letter has been scheduled for ${form.send_time.value} (${tzValue})`;
-      } else {
-        statusBox.textContent = result;
+        fileNameSpan.textContent = '';
       }
+    });
 
-      // Show "View Full Message" button
-      viewMessageButton.style.display = 'inline-block';
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = new FormData(form);
+      try {
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: data
+        });
+        const result = await response.text();
 
-      form.style.display = 'none';
-      backButton.style.display = 'inline-block';
-    } catch (error) {
-      statusBox.style.display = 'block';
-      statusBox.textContent = "Network error. Please try again.";
-      form.style.display = 'none';
-      backButton.style.display = 'inline-block';
-    }
-  });
+        statusBox.style.display = 'block';
+        if (form.send_time.value) {
+          const tzValue = document.getElementById('timezone').value;
+          statusBox.textContent = `Your letter has been scheduled for ${form.send_time.value} (${tzValue})`;
+        } else {
+          statusBox.textContent = result;
+        }
 
-  backButton.addEventListener('click', () => {
-    statusBox.style.display = 'none';
-    backButton.style.display = 'none';
-    viewMessageButton.style.display = 'none';
-    form.style.display = 'block';
-  });
+        // Show "View Full Message" button
+        viewMessageButton.style.display = 'inline-block';
 
-  // Zoom modal logic
-  viewMessageButton.addEventListener('click', () => {
-    fullMessageText.textContent = document.getElementById('message').value;
-    messageModal.style.display = 'block';
-  });
+        form.style.display = 'none';
+        backButton.style.display = 'inline-block';
+      } catch (error) {
+        statusBox.style.display = 'block';
+        statusBox.textContent = "Network error. Please try again.";
+        form.style.display = 'none';
+        backButton.style.display = 'inline-block';
+      }
+    });
 
-  closeModalButton.addEventListener('click', () => {
-    messageModal.style.display = 'none';
-  });
+    backButton.addEventListener('click', () => {
+      statusBox.style.display = 'none';
+      backButton.style.display = 'none';
+      viewMessageButton.style.display = 'none';
+      form.style.display = 'block';
+    });
 
-  // Music toggle logic
-  const player = document.getElementById('player');
-  const toggleButton = document.getElementById('toggleButton');
+    // Zoom modal logic
+    viewMessageButton.addEventListener('click', () => {
+      fullMessageText.textContent = document.getElementById('message').value;
+      messageModal.style.display = 'block';
+    });
 
-  toggleButton.addEventListener('click', () => {
-    if (player.paused) {
-      player.play();
-      toggleButton.innerHTML = '<div class="pause-icon"><div></div><div></div></div>';
-    } else {
-      player.pause();
-      toggleButton.innerHTML = '<div class="play-icon"></div>';
-    }
-  });
+    closeModalButton.addEventListener('click', () => {
+      messageModal.style.display = 'none';
+    });
+
+    // Music toggle logic
+    const player = document.getElementById('player');
+    const toggleButton = document.getElementById('toggleButton');
+
+    toggleButton.addEventListener('click', () => {
+      if (player.paused) {
+        player.play();
+        toggleButton.innerHTML = '<div class="pause-icon"><div></div><div></div></div>';
+      } else {
+        player.pause();
+        toggleButton.innerHTML = '<div class="play-icon"></div>';
+      }
+    });
   </script>
 
 </body>
