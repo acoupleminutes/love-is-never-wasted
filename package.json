@@ -1,6 +1,7 @@
 {
   "name": "love-is-never-wasted",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "nodemailer": "^6.9.8",
     "formidable": "^3.5.0",
