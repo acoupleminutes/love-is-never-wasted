@@ -22,18 +22,20 @@ export default async function handler(req, res) {
       attachmentPath = file.filepath;
     }
 
+    // ✅ Transporter setup with Gmail + App Password
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+        user: process.env.GMAIL_USER,          // must be set in Vercel env
+        pass: process.env.GMAIL_APP_PASSWORD,  // must be set in Vercel env
       },
     });
 
+    // ✅ Immediate send
     if (!send_time) {
       try {
         await transporter.sendMail({
-          from: process.env.GMAIL_USER,
+          from: process.env.GMAIL_USER, // REQUIRED to avoid parse error
           to,
           subject,
           text: message,
@@ -42,12 +44,13 @@ export default async function handler(req, res) {
             : [],
         });
         res.status(200).send("Your letter was sent successfully!");
-        if (attachmentPath) fs.unlinkSync(attachmentPath);
+        if (attachmentPath) fs.unlinkSync(attachmentPath); // cleanup temp file
       } catch (err) {
+        console.error("Send error:", err);
         res.status(500).send("Message could not be sent. Error: " + err.message);
       }
     } else {
-      // Convert local scheduled time to UTC
+      // ✅ Scheduled send
       const dt = DateTime.fromFormat(send_time, "yyyy-MM-dd'T'HH:mm", { zone: timezone });
       if (!dt.isValid) return res.status(400).send("Invalid date format.");
       const send_time_utc = dt.setZone("UTC").toFormat("yyyy-MM-dd'T'HH:mm");
@@ -57,6 +60,7 @@ export default async function handler(req, res) {
       if (fs.existsSync(scheduledFile)) {
         scheduled = JSON.parse(fs.readFileSync(scheduledFile, "utf8"));
       }
+
       scheduled.push({
         to,
         subject,
@@ -67,6 +71,7 @@ export default async function handler(req, res) {
         attachment_name: attachmentName,
         timezone,
       });
+
       fs.writeFileSync(scheduledFile, JSON.stringify(scheduled, null, 2));
       res.status(200).send(
         `Your letter has been scheduled for ${send_time} (${timezone}), stored as ${send_time_utc} UTC!`
